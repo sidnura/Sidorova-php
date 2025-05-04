@@ -24,7 +24,7 @@ class PostService
         return Post::with(['user', 'comments.user'])->find($id);
     }
 
-    public function createPost(array $data, ?UploadedFile $image = null): Post
+    public function createPost(array $data): Post
     {
         $post = Post::create([
             'title' => $data['title'],

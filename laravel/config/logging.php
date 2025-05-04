@@ -73,6 +73,15 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'model_changes' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/model_changes.log'),
+            'level' => 'info',
+            'days' => 7, 
+            'replace_placeholders' => true,
+            'formatter' => \Monolog\Formatter\JsonFormatter::class, 
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
@@ -128,5 +137,7 @@ return [
         ],
 
     ],
+
+    
 
 ];

@@ -1,41 +1,80 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="post">
-    @if($post->hasMedia('posts'))
-        <img src="{{ $post->getFirstMediaUrl('posts') }}" class="img-fluid mb-4">
-    @endif
-</div>
 <div class="container">
-    <h1>{{$post->title}}</h1>
-    <p class="text-muted">Автор: {{$post->user->name}}</p>
-    <div class="card mb-4">
+    <div class="post-image mb-4">
+        @if($post->hasMedia('post_images'))
+            <img src="{{ $post->getFirstMediaUrl('post_images') }}" 
+                 alt="{{ $post->title }}"
+                 class="img-fluid rounded shadow"
+                 style="max-height: 500px; width: 100%; object-fit: cover;">
+        @else
+            <div class="bg-light text-center p-5 rounded">
+                <i class="fas fa-image fa-5x text-muted mb-3"></i>
+                <p class="text-muted">Изображение отсутствует</p>
+            </div>
+        @endif
+    </div>
+
+    <div class="post-header mb-4">
+        <h1 class="mb-2">{{ $post->title }}</h1>
+        <p class="text-muted">
+            Автор: <a href="#">{{ $post->user->name }}</a> | 
+            Опубликовано: {{ $post->created_at->format('d.m.Y H:i') }}
+        </p>
+    </div>
+
+    <div class="post-content card mb-4">
         <div class="card-body">
-            {{$post->content}}
+            {!! nl2br(e($post->content)) !!}
         </div>
     </div>
-    <h3>Комментарии</h3>
-    @if($post->comments->isEmpty())
-        <div class="alert alert-info">Пока нет комментариев</div>
-    @else
-        @foreach($post->comments as $comment)
-            <div class="card mb-2">
-                <div class="card-body">
-                    <p>{{$comment->content}}</p>
-                    <small class="text-muted">Автор: {{$comment->user->name}}</small>
+
+    <div class="comments-section">
+        <h3 class="mb-3">
+            Комментарии 
+            <span class="badge bg-secondary">{{ $post->comments->count() }}</span>
+        </h3>
+
+        @if($post->comments->isEmpty())
+            <div class="alert alert-info">Пока нет комментариев. Будьте первым!</div>
+        @else
+            @foreach($post->comments as $comment)
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>{{ $comment->user->name }}</strong>
+                            <small class="text-muted">
+                                {{ $comment->created_at->diffForHumans() }}
+                            </small>
+                        </div>
+                        <p class="mb-0">{{ $comment->content }}</p>
+                    </div>
                 </div>
+            @endforeach
+        @endif
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h4 class="card-title">Добавить комментарий</h4>
+                <form method="POST" action="{{ route('posts.comments.store', $post->id) }}">
+                    @csrf
+                    <div class="form-group mb-3">
+                        <textarea class="form-control @error('content') is-invalid @enderror" 
+                                  name="content" 
+                                  rows="3" 
+                                  placeholder="Ваш комментарий..." 
+                                  required></textarea>
+                        @error('content')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i> Отправить
+                    </button>
+                </form>
             </div>
-        @endforeach
-    @endif
-    <form method="POST" action="{{route('comments.store')}}">
-        @csrf
-        <input type="hidden" name="post_id" value="{{$post->id}}">
-        <input type="hidden" name="user_id" value="{{$post->user_id}}">
-        <div class="form-group mb-3">
-            <label for="content">Добавить комментарий</label>
-            <textarea class="form-control @error('content') is-invalid @enderror" name="content" rows="3" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Отправить</button>
-    </form>
+    </div>
 </div>
 @endsection

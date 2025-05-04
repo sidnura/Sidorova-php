@@ -7,23 +7,50 @@ use App\Http\Requests\Posts\StorePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Http\Requests\Comments\StoreCommentRequest;
 use App\Services\Posts\PostService;
-use App\Services\Comments\CommentService;
+// use App\Services\Comments\CommentService;
+use App\Models\Posts\Post;
 
 class PostController extends Controller
 {
     protected $postService;
     protected $commentService;
 
-    public function __construct(PostService $postService, CommentService $commentService)
+    public function __construct(PostService $postService)
     {
         $this->postService = $postService;
-        $this->commentService = $commentService;
+        //$this->commentService = $commentService;
     }
 
     public function index()
     {
         $posts = $this->postService->getAllPosts();
         return view('posts.index', compact('posts'));
+    }
+
+    public function create()
+    {
+        $users = \App\Models\User::all();
+        return view('posts.create', compact('users'));
+    }
+
+    public function store(StorePostRequest $request)
+    {
+        // $post = $this->postService->createPost($request->validated());
+        
+        // if ($request->hasFile('image')) {
+        //     $this->postService->addImageToPost($post, $request->file('image'));
+        // }
+        
+        // return redirect()->route('posts.index')
+        //     ->with('success', 'Post created successfully.');
+        $post = Post::create($request->validated());
+    
+        if ($request->hasFile('image')) {
+            $post->addMediaFromRequest('image')
+                 ->toMediaCollection('post_images');
+        }
+        
+        return redirect()->route('posts.index');
     }
 
     public function show($id)
@@ -38,5 +65,4 @@ class PostController extends Controller
         return back()->with('success', 'Comment added successfully.');
     }
 
-    // Остальные методы аналогично UserController
 }

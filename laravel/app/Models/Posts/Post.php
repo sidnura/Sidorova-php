@@ -1,23 +1,70 @@
 <?php
 
+
 namespace App\Models\Posts;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Logging\LogsModelChanges;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Post extends Model
+class Post extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, LogsModelChanges, InteractsWithMedia;
 
-    protected $fillable = ['title', 'content', 'user_id'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
+    protected $fillable = [
+        'title',
+        'content',
+        'user_id'
+    ];
 
-    public function user()
+    /**
+     * Attributes that should not be logged.
+     *
+     * @var array<string>
+     */
+    protected $dontLog = [
+        'updated_at'
+    ];
+
+    /**
+     * Define media collections for the model.
+     */
+    public function registerMediaCollections(): void
     {
-        return $this->belongsTo(User::class);
+        $this->addMediaCollection('post_images')
+             ->singleFile() // Одно изображение на пост
+             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+             ->useDisk('public'); // Используем public диск
     }
 
+    /**
+     * Get the post's author.
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
+
+    /**
+     * Get the post's comments.
+     */
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(\App\Models\Comments\Comment::class);
+    }
+
+    /**
+     * Get the URL of the post's main image.
+     */
+    public function getImageUrl(): ?string
+    {
+        return $this->getFirstMediaUrl('post_images');
     }
 }
