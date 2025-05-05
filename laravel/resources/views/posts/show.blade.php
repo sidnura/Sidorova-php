@@ -52,26 +52,29 @@
                     </div>
                 </div>
             @endforeach
+
+            <!-- @foreach($post->comments as $comment)
+    <div class="card mb-3">
+        <div class="card-body">
+            <p class="card-text">{{ $comment->content }}</p>
+            <p class="text-muted small">
+                {{ optional($comment->user)->name ?? 'Гость' }} • 
+                {{ $comment->created_at->diffForHumans() }}
+            </p>
+        </div>
+    </div>
+@endforeach -->
         @endif
 
         <div class="card mt-4">
             <div class="card-body">
                 <h4 class="card-title">Добавить комментарий</h4>
-                <form method="POST" action="{{ route('posts.comments.store', $post->id) }}">
+                <form method="POST" action="{{ route('posts.comments.store', $post) }}">
                     @csrf
-                    <div class="form-group mb-3">
-                        <textarea class="form-control @error('content') is-invalid @enderror" 
-                                  name="content" 
-                                  rows="3" 
-                                  placeholder="Ваш комментарий..." 
-                                  required></textarea>
-                        @error('content')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="mb-3">
+                        <textarea name="content" class="form-control" rows="3" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane me-1"></i> Отправить
-                    </button>
+                    <button type="submit" class="btn btn-primary">Добавить комментарий</button>
                 </form>
             </div>
         </div>

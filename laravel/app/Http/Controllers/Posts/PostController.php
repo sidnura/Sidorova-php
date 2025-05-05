@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Posts;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Http\Requests\Comments\StoreCommentRequest;
@@ -56,13 +57,41 @@ class PostController extends Controller
     public function show($id)
     {
         $post = $this->postService->getPostWithComments($id);
+        $post->load(['user', 'comments.user']); // Добавляем eager loading
         return view('posts.show', compact('post'));
     }
+
+    // public function show($id)
+    // {
+    //     $post = $this->postService->getPostWithComments($id);
+    //     return view('posts.show', compact('post'));
+    // }
 
     public function storeComment(StoreCommentRequest $request, $postId)
     {
         $this->commentService->createCommentForPost($postId, $request->validated());
         return back()->with('success', 'Comment added successfully.');
+    }
+
+    public function edit(Post $post)
+    {
+        return view('posts.edit', compact('post'));
+    }
+
+    /**
+     * Update the specified post in storage.
+     */
+    public function update(Request $request, Post $post)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string'
+        ]);
+
+        $post->update($validated);
+
+        return redirect()->route('posts.show', $post)
+            ->with('success', 'Post updated successfully');
     }
 
 }

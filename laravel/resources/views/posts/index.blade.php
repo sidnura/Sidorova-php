@@ -3,7 +3,9 @@
 @section('content')
 <div class="container">
     <h1>Список постов</h1>
-    <a href="{{route('posts.create')}}" class="btn btn-primary mb-3">Создать пост</a>
+    @can('create', App\Models\Posts\Post::class)
+        <a href="{{route('posts.create')}}" class="btn btn-primary mb-3">Создать пост</a>
+    @endcan
     <table class="table">
         <thead>
             <tr>
@@ -20,13 +22,21 @@
                     <td>{{$post->title}}</td>
                     <td>{{$post->user->name}}</td>
                     <td>
-                        <a href="{{route('posts.edit', $post)}}" class="btn btn-primary mb-3">Редактировать</a>
-                        <a href="{{route('posts.show', $post)}}" class="btn btn-primary mb-3">Просмотр</a>
-                        <!-- <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Вы уверены?')">Удалить</button>
-                        </form> -->
+                        <div class="btn-group" role="group">
+                            <a href="{{route('posts.show', $post)}}" class="btn btn-sm btn-outline-primary">Просмотр</a>
+                            
+                            @can('update', $post)
+                                <a href="{{ route('posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                            @endcan
+                            
+                            @can('delete', $post)
+                                <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Вы уверены?')">Удалить</button>
+                                </form>
+                            @endcan
+                        </div>
                     </td>
                 </tr>
             @endforeach
