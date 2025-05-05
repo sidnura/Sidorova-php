@@ -17,7 +17,6 @@
     <form method="POST" action="{{ route('posts.store') }}" enctype="multipart/form-data">
         @csrf
         
-        <!-- Поле для загрузки изображения -->
         <div class="form-group mb-3">
             <label for="image">Изображение поста</label>
             <input type="file" 
@@ -33,7 +32,6 @@
             </small>
         </div>
         
-        <!-- Выбор автора -->
         <div class="form-group mb-3">
             <label for="user_id">Автор</label>
             <select name="user_id" 
@@ -52,7 +50,6 @@
             @enderror
         </div>
         
-        <!-- Заголовок поста -->
         <div class="form-group mb-3">
             <label for="title">Заголовок</label>
             <input type="text" 
@@ -66,7 +63,6 @@
             @enderror
         </div>
         
-        <!-- Содержание поста -->
         <div class="form-group mb-3">
             <label for="content">Содержание</label>
             <textarea class="form-control @error('content') is-invalid @enderror" 

@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Comments;
 
 use App\Http\Controllers\Controller;
 use App\Models\Posts\Post;
+use App\Models\User; 
+
 use Illuminate\Http\Request;
 
-use App\Models\Comments\Comment; //добавила
+use App\Models\Comments\Comment; 
 
 
 class CommentController extends Controller
@@ -32,18 +34,18 @@ class CommentController extends Controller
      */
     public function store(Request $request, Post $post)
     {
+        // Валидация входных данных
         $validated = $request->validate([
-            'content' => 'required|string|max:1000'
+            'content' => 'required|string',
+            'user_id' => 'required|exists:users,id',  
         ]);
-
-        $post->comments()->create();
-
-        // $post->comments()->create([
-        //     'content' => $validated['content'],
-        //     'user_id' => 1
-        // ]);
-
-        return back()->with('success', 'Комментарий добавлен');
+    
+        $post->comments()->create([
+            'content' => $validated['content'],
+            'user_id' => $validated['user_id'],
+        ]);
+    
+        return redirect()->back()->with('success', 'Комментарий добавлен');
     }
 
 

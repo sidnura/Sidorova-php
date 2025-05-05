@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Posts;
 
 use App\Http\Controllers\Controller;
+use App\Models\User; 
+
 use Illuminate\Http\Request;
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
@@ -54,11 +56,11 @@ class PostController extends Controller
         return redirect()->route('posts.index');
     }
 
-    public function show($id)
+    public function show(Post $post)
     {
-        $post = $this->postService->getPostWithComments($id);
-        $post->load(['user', 'comments.user']); // Добавляем eager loading
-        return view('posts.show', compact('post'));
+        $users = User::all();  
+    
+        return view('posts.show', compact('post', 'users'));
     }
 
     // public function show($id)

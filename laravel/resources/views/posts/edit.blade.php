@@ -2,6 +2,11 @@
 
 @section('content')
 <div class="container">
+
+    <a href="{{ route('posts.index') }}" class="btn btn-outline-secondary mb-4">
+        ← Назад к списку постов
+    </a>
+
     <h1>Редактирование поста</h1>
     @if ($errors->any())
         <div class="alert alert-danger">

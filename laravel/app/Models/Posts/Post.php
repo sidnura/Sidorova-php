@@ -39,9 +39,9 @@ class Post extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('post_images')
-             ->singleFile() // Одно изображение на пост
+             ->singleFile() 
              ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
-             ->useDisk('public'); // Используем public диск
+             ->useDisk('public'); 
     }
 
     /**
