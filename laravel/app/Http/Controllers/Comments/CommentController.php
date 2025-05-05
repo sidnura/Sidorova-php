@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Posts\Post;
 use Illuminate\Http\Request;
 
+use App\Models\Comments\Comment; //добавила
+
 
 class CommentController extends Controller
 {
@@ -43,6 +45,7 @@ class CommentController extends Controller
 
         return back()->with('success', 'Комментарий добавлен');
     }
+
 
     /**
      * Display the specified resource.

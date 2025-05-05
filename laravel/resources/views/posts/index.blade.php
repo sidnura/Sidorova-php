@@ -2,10 +2,17 @@
 
 @section('content')
 <div class="container">
-    <h1>Список постов</h1>
-    @can('create', App\Models\Posts\Post::class)
-        <a href="{{route('posts.create')}}" class="btn btn-primary mb-3">Создать пост</a>
-    @endcan
+    <div class="d-flex justify-content-between mb-4">
+        <h1>Список постов</h1>
+    </div>
+
+    <div class="mb-4">
+        <a href="{{ route('posts.create') }}" class="btn btn-outline-primary rounded shadow-sm">
+            Создать пост
+        </a>
+    </div>
+
+
     <table class="table">
         <thead>
             <tr>
@@ -18,17 +25,14 @@
         <tbody>
             @foreach($posts as $post)
                 <tr>
-                    <td>{{$post->id}}</td>
-                    <td>{{$post->title}}</td>
-                    <td>{{$post->user->name}}</td>
+                    <td>{{ $post->id }}</td>
+                    <td>{{ $post->title }}</td>
+                    <td>{{ $post->user->name }}</td>
                     <td>
                         <div class="btn-group" role="group">
-                            <a href="{{route('posts.show', $post)}}" class="btn btn-sm btn-outline-primary">Просмотр</a>
-                            
-                            @can('update', $post)
-                                <a href="{{ route('posts.edit', $post) }}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
-                            @endcan
-                            
+                            <a href="{{ route('posts.show', $post) }}" class="btn btn-sm btn-outline-primary">Просмотр</a>
+                            <a href="{{ route('posts.edit', $post) }}" class="btn btn-sm btn-outline-primary">Редактировать</a>
+
                             @can('delete', $post)
                                 <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
                                     @csrf
