@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Comments\Comment; 
 
+use Illuminate\Support\Facades\Auth;
+
 
 class CommentController extends Controller
 {
@@ -34,18 +36,21 @@ class CommentController extends Controller
      */
     public function store(Request $request, Post $post)
     {
-        // Валидация входных данных
+        if (Auth::user()->hasRole('editor')) {
+            return redirect()->back()->with('error', 'Редакторам запрещено оставлять комментарии.');
+        }
+
         $validated = $request->validate([
-            'content' => 'required|string',
-            'user_id' => 'required|exists:users,id',  
+            'content' => 'required|string|max:1000',
         ]);
-    
-        $post->comments()->create([
-            'content' => $validated['content'],
-            'user_id' => $validated['user_id'],
-        ]);
-    
-        return redirect()->back()->with('success', 'Комментарий добавлен');
+
+        $comment = new Comment();
+        $comment->content = $validated['content'];
+        $comment->user_id = Auth::id();
+        $comment->post_id = $post->id;
+        $comment->save();
+
+        return redirect()->back()->with('success', 'Комментарий добавлен!');
     }
 
 

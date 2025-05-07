@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Logging\LogsModelChanges; 
+use Spatie\Permission\Traits\HasRoles; 
+
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, LogsModelChanges; 
+
+    // The User model requires this trait
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -65,5 +70,15 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function canComment(Post $post): bool
+    {
+        return $this->can('comments.create');
+    }
+
+    public function canEditPost(Post $post): bool
+    {
+        return $this->hasRole('admin') || ($this->hasRole('editor') && $this->id === $post->user_id);
     }
 }
