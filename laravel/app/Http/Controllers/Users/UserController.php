@@ -19,11 +19,9 @@ class UserController extends Controller
 
     public function index()
     {
-
         $users = $this->userService->getAllUsers();
         return view('users.index', compact('users'));
     }
-    
 
     public function create()
     {
@@ -33,7 +31,7 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         $this->userService->createUser($request->validated());
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        return redirect()->route('users.index')->with('success', 'Пользователь успешно создан');
     }
 
     public function edit($id)
@@ -42,10 +40,13 @@ class UserController extends Controller
         return view('users.edit', compact('user'));
     }
 
-    public function update(UpdateUserRequest $request, $id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $this->userService->updateUser($id, $request->validated());
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        $this->userService->updateUser($user, $request->validated());
+        
+        return redirect()
+            ->route('users.edit', $user)
+            ->with('success', 'Пользователь обновлён');
     }
-
+    
 }

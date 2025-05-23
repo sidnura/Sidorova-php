@@ -24,3 +24,5 @@ class PostFactory extends Factory
         ];
     }
 }
+
+//как вынести что-то куда-то

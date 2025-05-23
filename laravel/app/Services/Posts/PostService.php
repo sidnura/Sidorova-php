@@ -26,24 +26,12 @@ class PostService
 
     public function createPost(array $data): Post
     {
-        $post = Post::create([
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'user_id' => $data['user_id']
-        ]);
-        
-    
-        if (isset($data['image'])) {
-            $post->addMedia($data['image']->getPathname())
-                 ->usingFileName($data['image']->getClientOriginalName())
-                 ->toMediaCollection('posts');
-        }
-        return $post;
+        $post = Post::create($data);
+        PostStoreJob::dispatch($data);
     }
 
-    public function updatePost(string $id, array $data)
+    public function updatePost(Post $post, array $data): Post
     {
-        $post = $this->getPostById($id);
         $post->update($data);
         return $post;
     }

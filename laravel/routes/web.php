@@ -8,44 +8,42 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
+    Route::resource('posts', PostController::class)
+        ->except(['edit', 'update']) // Исключаем edit/update для отдельной обработки
+        ->names([
+            'index' => 'posts.index',
+            'create' => 'posts.create',
+            'store' => 'posts.store',
+            'show' => 'posts.show',
+            'destroy' => 'posts.destroy'
+        ]);
 
-    Route::prefix('posts')->group(function () {
+    Route::middleware(['can:posts.edit'])->group(function () {
+        Route::get('posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+        Route::put('posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    });
 
-        Route::get('/', [PostController::class, 'index'])->name('posts.index');
-
-        Route::middleware(['can:posts.create'])->group(function () {
-            Route::get('/create', [PostController::class, 'create'])->name('posts.create');
-            Route::post('/', [PostController::class, 'store'])->name('posts.store');
-        });
-
-        Route::post('/{post}/comments', [CommentController::class, 'store'])
-        ->middleware('auth')
+    Route::post('posts/{post}/comments', [CommentController::class, 'store'])
         ->name('posts.comments.store');
 
-        Route::middleware(['auth'])->group(function () {
-            Route::get('/{post}/edit', [PostController::class, 'edit'])
-                ->where('post', '[0-9]+')
-                ->name('posts.edit');
-            Route::put('/{post}', [PostController::class, 'update'])
-                ->where('post', '[0-9]+')
-                ->name('posts.update');
-        });
-
-        Route::get('/{post}', [PostController::class, 'show'])
-            ->where('post', '[0-9]+')
-            ->name('posts.show');
-
-        Route::middleware(['can:posts.delete'])->delete('/{post}', [PostController::class, 'destroy'])
-            ->where('post', '[0-9]+')
-            ->name('posts.destroy');
-    });
-
-    Route::middleware(['can:manage.all'])->group(function () {
-        Route::resource('users', UserController::class)->except(['show']);
-    });
+    Route::middleware(['can:manage.all'])->resource('users', UserController::class)
+        ->except(['show'])
+        ->names([
+            'index' => 'users.index',
+            'create' => 'users.create',
+            'store' => 'users.store',
+            'edit' => 'users.edit',
+            'update' => 'users.update',
+            'destroy' => 'users.destroy'
+        ]);
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
         ->name('home');
+});
+
+Route::get('/test', function () {
+    $data = ['title' => 'test', 'content' => 'test'];
+    app()->make(App\Services\Posts\PostService::class)->create($data);
 });
 
 Route::redirect('/', '/posts');

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Comment extends Model
 {
 
-    use HasFactory; //добавила
+    use HasFactory; 
 
     protected $fillable = ['content','user_id','post_id'];
     
